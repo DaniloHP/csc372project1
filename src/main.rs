@@ -6,6 +6,10 @@ use reqwest::blocking::Client;
 mod types;
 
 fn main() {
+    let mut s = String::from("   hey   ");
+    strip_whitespace(&mut s);
+    println!("'{}'", s);
+    return;
     let client = reqwest::blocking::Client::new();
     print!("Enter your GitHub username: ");
     let _ = stdout().flush();
@@ -16,6 +20,34 @@ fn main() {
         println!("That account was not found!");
         exit(1);
     }
+}
+
+fn main_menu(client: &Client, uname: &String) {
+    println!("Welcome, {}", uname);
+    loop {
+        print!("1) See my repos\nq) Exit\nChoice: ");
+        let _ = stdout().flush();
+        let choice: String = read!();
+        match choice.as_str() {
+            "1" => {
+                print_repos(client, uname);
+            }
+            _ => {}
+        }
+    }
+}
+
+/*
+ * Removes spaces from the start and end of a string
+ * TODO: no it doesn't
+ */
+fn strip_whitespace(s: &mut String) {
+    s.strip_prefix(" ");
+    s.strip_suffix(" ");
+}
+
+fn print_repos(client: &Client, uname: &String) {
+    println!("Here's all your repos lol");
 }
 
 fn user_exists(client: &Client, uname: &String) -> bool {
