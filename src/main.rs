@@ -31,7 +31,7 @@ fn main_menu(client: &Client, uname: &String) {
         println!();
         print!("1) See my repos\nq) Exit\nChoice: ");
         let _ = stdout().flush();
-        let mut choice: String = read!("{}\n");
+        let choice: String = read!("{}\n");
         println!();
         match choice.trim() {
             "1" => {
@@ -76,7 +76,7 @@ fn print_repos(client: &Client, uname: &String) -> Result<(), Box<dyn std::error
             len
         );
         let _ = stdout().flush();
-        let mut choice: String = read!("{}\n");
+        let choice: String = read!("{}\n");
         let choice = choice.trim();
         println!();
         if choice == "a" {
@@ -109,12 +109,11 @@ fn print_repo_titles(repos: &Vec<Repo>) {
 }
 
 fn print_repo_info(repo: &Repo) {
-    let owner = repo.owner.as_ref().unwrap().login.as_ref().unwrap();
-    println!("{} by {}", repo.name.as_ref().unwrap(), owner);
+    println!("{}", repo.name.as_ref().unwrap());
     roasts::roast_fork(repo.fork);
     roasts::roast_default_branch(repo.default_branch.as_ref().unwrap());
     roasts::roast_stars(repo.stargazers_count);
-    roasts::roast_license(&repo.license);
+    roasts::roast_license(repo.license.as_ref());
     roasts::roast_updated_at(&repo.updated_at.as_ref().unwrap());
 }
 
