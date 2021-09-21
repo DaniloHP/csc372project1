@@ -31,10 +31,9 @@ fn main_menu(client: &Client, uname: &String) {
         println!();
         print!("1) See my repos\nq) Exit\nChoice: ");
         let _ = stdout().flush();
-        let mut choice = read!("{}\n");
-        strip_whitespace(&mut choice);
+        let mut choice: String = read!("{}\n");
         println!();
-        match choice.as_str() {
+        match choice.trim() {
             "1" => {
                 let _ = print_repos(client, uname);
                 // allow user to choose attribute
@@ -61,34 +60,6 @@ fn main_menu(client: &Client, uname: &String) {
     }
 }
 
-/*
- * Removes spaces from the start and end. Use only with short strings
- */
-fn strip_whitespace(s: &mut String) {
-    let mut start = -1;
-    let mut end = -1;
-    let mut i: i32 = 0;
-    for c in s.chars() {
-        if c != ' ' {
-            end = i;
-            if start < 0 {
-                start = i;
-            }
-        }
-        i += 1; //no ++ in Rust
-    }
-    let orig_len = s.len();
-    if start > 0 {
-        s.replace_range(..(start as usize), "");
-    }
-    if end > 0 {
-        let diff = (orig_len - s.len()) as i32;
-        s.replace_range(((end - diff + 1) as usize)..s.len(), "");
-    } else if start == -1 && end == -1 {
-        s.clear()
-    }
-}
-
 fn print_repos(client: &Client, uname: &String) -> Result<(), Box<dyn std::error::Error>> {
     let repos = client
         .get(format!("https://api.github.com/users/{}/repos", uname))
@@ -106,7 +77,7 @@ fn print_repos(client: &Client, uname: &String) -> Result<(), Box<dyn std::error
         );
         let _ = stdout().flush();
         let mut choice: String = read!("{}\n");
-        strip_whitespace(&mut choice);
+        let choice = choice.trim();
         println!();
         if choice == "a" {
             println!("{}\n", SEPARATOR);
@@ -142,7 +113,9 @@ fn print_repo_info(repo: &Repo) {
     println!("{} by {}", repo.name.as_ref().unwrap(), owner);
     roasts::roast_fork(repo.fork);
     roasts::roast_default_branch(repo.default_branch.as_ref().unwrap());
-    roasts::roast_stars(repo.stargazers_count)
+    roasts::roast_stars(repo.stargazers_count);
+    roasts::roast_license(&repo.license);
+    roasts::roast_updated_at(&repo.updated_at.as_ref().unwrap());
 }
 
 fn user_exists(client: &Client, uname: &String) -> bool {
