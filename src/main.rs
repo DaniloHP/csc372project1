@@ -115,7 +115,7 @@ fn print_user_info(client: &Client, uname:&String) -> Result<(), Box<dyn std::er
     println!("What would you like to know about {}?\n", uname);
     println!("Login: {}", uinfo.login.as_ref().unwrap());
     println!("User ID: {}", uinfo.id);
-    println!("")
+    println!("");
     //.is_some() for things that are not guaranteed to have
     print!("");
     print!("This is the information for {}.\n" , uname);
