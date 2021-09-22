@@ -19,7 +19,7 @@ pub struct Owner {
     pub events_url: Option<String>,
     pub received_events_url: Option<String>,
     // pub type: Option<String>,
-    pub site_admin: bool
+    pub site_admin: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -28,7 +28,7 @@ pub struct License {
     pub name: Option<String>,
     pub spdx_id: Option<String>,
     pub url: Option<String>,
-    pub node_id: Option<String>
+    pub node_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -105,5 +105,5 @@ pub struct Repo {
     pub forks: i32,
     pub open_issues: i32,
     pub watchers: i32,
-    pub default_branch: Option<String>
+    pub default_branch: Option<String>,
 }
