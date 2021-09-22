@@ -27,7 +27,7 @@ pub fn roast_num_repos(num: usize) {
 
 pub fn roast_fork(is_fork: bool) {
     if is_fork {
-        println!("Well not really, it's just a fork.");
+        println!("Forked (stolen).");
     }
 }
 
@@ -61,7 +61,7 @@ pub fn roast_license(license: Option<&License>) {
  * date_str will be something like "2021-09-20T13:47:36Z"
  */
 pub fn roast_updated_at(date_str: &String) {
-    let date_created = UTC.datetime_from_str(date_str.as_str(), "%+");
+    let date_created = UTC.datetime_from_str(date_str.as_str(), "%+");  // ISO-8601
     if date_created.is_ok() {
         let now = UTC::now();
         let diff = now - date_created.unwrap();
@@ -89,5 +89,24 @@ pub fn roast_updated_at(date_str: &String) {
         return;
     } else {
         println!("Last modified at {}.", date_str);
+    }
+}
+
+pub fn roast_issues(num_issues: i32) {
+    let plural = plural!(num_issues);
+    if num_issues < 5 {
+        println!("Are so few issue{} ({}) because your code is good, or because nobody's heard of this repo?", plural, num_issues)
+    } else if num_issues < 20 {
+        println!("This repo has {} issue{}, might want to get on that.", num_issues, plural)
+    } else if num_issues < 100 {
+        println!("{} issue{} is kind of a lot, stop messing with this and go fix them.", num_issues, plural)
+    } else {
+        println!("Holy crap, this repo has {} issue{}, go get on it!", num_issues, plural)
+    }
+}
+
+pub fn get_field(field: &str) {
+    match field {
+        "url" => struct.url
     }
 }

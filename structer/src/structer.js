@@ -25,6 +25,7 @@ const toRustType = (val) => {
   }
 };
 
+// obj is the JSON object from the GitHub API
 const iterObj = (obj, structName) => {
   let soFar = "";
   soFar += `\n#[derive(Debug, Deserialize)]\npub struct ${structName} {\n`;
