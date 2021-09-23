@@ -112,15 +112,36 @@ fn print_user_info(client: &Client, uname:&String) -> Result<(), Box<dyn std::er
         .send()?
         .json::<User>()?;
 
-    println!("What would you like to know about {}?\n", uname);
-    println!("Login: {}", uinfo.login.as_ref().unwrap());
-    println!("User ID: {}", uinfo.id);
-    println!("");
-    //.is_some() for things that are not guaranteed to have
-    print!("");
-    print!("This is the information for {}.\n" , uname);
-    println!("login: {:?}\n", &uinfo);
-    Ok(())
+    println!("Here are some details about {}:", uname);
+    println!("    Login: {}", uinfo.login.as_ref().unwrap());
+    println!("    User ID: {}", uinfo.id);
+    println!("    User URL: {}", uinfo.url.as_ref().unwrap());
+    println!("    Account Created: {}", uinfo.created_at.as_ref().unwrap());
+    println!("    Account Updated: {}", uinfo.updated_at.as_ref().unwrap());
+    println!("    Followers: {}", uinfo.followers);
+    println!("    Following: {}", uinfo.following);
+
+    let choice = "a";
+    loop {
+        println!("\nIf you want more information about {}, enter 'a'. Otherwise 'r' to return to menu.", uinfo.login.as_ref().unwrap());
+        let choice: String = read!("{}\n");
+        let choice = choice.trim();
+
+        if choice == "a" || choice == "r" {
+            break;
+        } else {
+            println!("**Invalid input. Please try again.**");
+        }
+    }
+    //Valid Input
+    if choice == "a" {
+        println!("Here is all information about {}:", uname);
+        print_all_user_info(uinfo);
+        Ok(())
+        //Need to add here
+    } else {
+        Ok(main_menu(client, uname))    //returning to main menu
+    }
 }
 
 fn print_repo_titles(repos: &Vec<Repo>) {
@@ -153,4 +174,92 @@ fn user_exists(client: &Client, uname: &String) -> bool {
         return resp.unwrap().status().is_success();
     }
     return false;
+}
+
+
+fn print_all_user_info(uinfo: User){
+
+    if uinfo.login.is_some() {
+        println!("    Login: {}", uinfo.login.as_ref().unwrap());
+    }
+    println!("    ID: {}", uinfo.id);
+    if uinfo.node_id.is_some() {
+        println!("    Node ID: {}", uinfo.node_id.as_ref().unwrap());
+    }
+    if uinfo.avatar_url.is_some() {
+        println!("    Avatar URL: {}", uinfo.avatar_url.as_ref().unwrap());
+    }
+    if uinfo.gravatar_id.is_some() {
+        println!("    Gravatar ID: {}", uinfo.gravatar_id.as_ref().unwrap());
+    }
+    if uinfo.url.is_some() {
+        println!("    URL: {}", uinfo.url.as_ref().unwrap());
+    }
+    if uinfo.html_url.is_some() {
+        println!("    HTML URL: {}", uinfo.html_url.as_ref().unwrap());
+    }
+    if uinfo.followers_url.is_some() {
+        println!("    Followers URL: {}", uinfo.followers_url.as_ref().unwrap());
+    }
+    if uinfo.following_url.is_some() {
+        println!("    Following URL: {}", uinfo.following_url.as_ref().unwrap());
+    }
+    if uinfo.gists_url.is_some() {
+        println!("    Gists URL: {}", uinfo.gists_url.as_ref().unwrap());
+    }
+    if uinfo.starred_url.is_some() {
+        println!("    Starred URL: {}", uinfo.starred_url.as_ref().unwrap());
+    }
+    if uinfo.subscriptions_url.is_some() {
+        println!("    Subscriptions URL: {}", uinfo.subscriptions_url.as_ref().unwrap());
+    }
+    if uinfo.organizations_url.is_some() {
+        println!("    Organizations URL: {}", uinfo.organizations_url.as_ref().unwrap());
+    }
+    if uinfo.repos_url.is_some() {
+        println!("    Repos URL: {}", uinfo.repos_url.as_ref().unwrap());
+    }
+    if uinfo.events_url.is_some() {
+        println!("    Events URL: {}", uinfo.events_url.as_ref().unwrap());
+    }
+    if uinfo.received_events_url.is_some() {
+        println!("    Received Events URL: {}", uinfo.received_events_url.as_ref().unwrap());
+    }
+    println!("    Site Admin: {}", uinfo.site_admin);
+    if uinfo.name.is_some() {
+        println!("    Name: {}", uinfo.name.as_ref().unwrap());
+    }
+    if uinfo.company.is_some() {
+        println!("    Company: {}", uinfo.company.as_ref().unwrap());
+    }
+    if uinfo.blog.is_some() {
+        println!("    Blog: {}", uinfo.blog.as_ref().unwrap());
+    }
+    if uinfo.location.is_some() {
+        println!("    Location: {}", uinfo.location.as_ref().unwrap());
+    }
+    if uinfo.email.is_some() {
+        println!("    Email: {}", uinfo.email.as_ref().unwrap());
+    }
+    if uinfo.hireable.is_some() {
+        println!("    Hireable: {}", uinfo.hireable.as_ref().unwrap());
+    }
+    if uinfo.bio.is_some() {
+        println!("    Bio: {}", uinfo.bio.as_ref().unwrap());
+    }
+    if uinfo.twitter_username.is_some() {
+        println!("    Twitter Username: {}", uinfo.twitter_username.as_ref().unwrap());
+    }
+
+    println!("    Public Repos: {}", uinfo.public_repos);
+    println!("    Public Gists: {}", uinfo.public_gists);
+    println!("    Followers: {}", uinfo.followers);
+    println!("    Following: {}", uinfo.following);
+
+    if uinfo.created_at.is_some() {
+        println!("    Created At: {}", uinfo.created_at.as_ref().unwrap());
+    }
+    if uinfo.updated_at.is_some() {
+        println!("    Updated At: {}", uinfo.updated_at.as_ref().unwrap());
+    }
 }
