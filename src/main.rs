@@ -33,24 +33,33 @@ fn main_menu(client: &Client, uname: &String) {
     println!("Welcome, {}", uname);
     loop {
         println!();
-        print!("1) See my repos\n2) See my info\ns) Switch account\nq) Exit\nChoice: ");
+        print!("1) See my repos\n2) See my info\ns) Switch account\nq) Quit\nChoice: ");
         let _ = stdout().flush();
         let choice: String = read!("{}\n");
         println!();
         match choice.trim() {
             "1" => {
-                let _ = print_repos(client, uname);
+                let res = print_repos_menu(client, uname);
+                if res.is_err() {
+                    println!(
+                        "There was an error fetching your repos, I guess I'm the idiot now.\n{:?}",
+                        res
+                    );
+                }
                 // allow user to choose attribute
-            } "2" => {
+            }
+            "2" => {
                 let _ = print_user_info(client, uname);
                 //prints user's info (creation/updated date, follower #
                 // --> followers
                 // --> stars
                 // allow user to choose attribute
-            } "s" => {
+            }
+            "s" => {
                 // sign out and get another username
                 break;
-            } "q" => {
+            }
+            "q" => {
                 println!("Exiting...");
                 exit(0);
             }
@@ -61,21 +70,33 @@ fn main_menu(client: &Client, uname: &String) {
     }
 }
 
-fn print_repos(client: &Client, uname: &String) -> Result<(), Box<dyn std::error::Error>> {
-    let repos =client
+fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::error::Error>> {
+    let max_repos = 40usize;
+    let repos = client
         .get(format!("https://api.github.com/users/{}/repos", uname))
         .header("User-agent", "")
+        .header("accept", " application/vnd.github.v3+json")
+        .query(&[("per_page", max_repos.to_string())])
         .send()?
         .json::<Vec<types::repo::Repo>>()?; // Vector of Repo objects
     let num_repos = repos.len();
-    roasts::roast_num_repos(num_repos);
+    roasts::roast_num_repos(num_repos, max_repos);
+    let mut should_list = true; //true on the first iteration and if requested with `l`
+    let should_always_list = num_repos <= 5; //always show the list if there are fewer than n repos
+    let l_prompt = if should_always_list {
+        "" //don't prompt to list if we're always going to show the list anyway
+    } else {
+        "`l` to\nlist them again, "
+    };
     if num_repos > 0 {
         loop {
-            println!("{} has {} public repos:", uname, num_repos);
-            print_repo_titles(&repos);
+            if should_list || should_always_list {
+                should_list = false;
+                print_repo_titles(&repos);
+            }
             print!(
-                "\nWhich repo will we examine?\nEnter a number 1 through {}, `r` to return, or `a` for all: ",
-                num_repos
+                "\nWhich repo will we examine?\nEnter a number 1 through {}, `a` for all, {}or `r` to return: ",
+                num_repos, l_prompt
             );
             let _ = stdout().flush();
             let choice: String = read!("{}\n");
@@ -87,9 +108,14 @@ fn print_repos(client: &Client, uname: &String) -> Result<(), Box<dyn std::error
                     print_repo_info(&repo);
                     println!();
                 }
+                if num_repos > 15 {
+                    println!("I hope your terminal can scroll ^^^^^");
+                }
                 println!("{}\n", SEPARATOR);
             } else if choice == "r" {
-              break;
+                break;
+            } else if choice == "l" && !should_always_list {
+                should_list = true;
             } else {
                 let default = num_repos + 1;
                 let index = choice.parse::<usize>().unwrap_or(default);
@@ -104,7 +130,7 @@ fn print_repos(client: &Client, uname: &String) -> Result<(), Box<dyn std::error
     Ok(())
 }
 
-fn print_user_info(client: &Client, uname:&String) -> Result<(), Box<dyn std::error::Error>>{
+fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::error::Error>> {
     //Get User Info and store into User struct
     let uinfo = client
         .get(format!("https://api.github.com/users/{}", uname))
@@ -121,10 +147,10 @@ fn print_user_info(client: &Client, uname:&String) -> Result<(), Box<dyn std::er
     println!("    Followers: {}", uinfo.followers);
     println!("    Following: {}", uinfo.following);
 
-    let choice = "a";
+    let mut choice: String;
     loop {
         println!("\nIf you want more information about {}, enter 'a'. Otherwise 'r' to return to menu.", uinfo.login.as_ref().unwrap());
-        let choice: String = read!("{}\n");
+        choice = read!("{}\n");
         let choice = choice.trim();
 
         if choice == "a" || choice == "r" {
@@ -140,7 +166,7 @@ fn print_user_info(client: &Client, uname:&String) -> Result<(), Box<dyn std::er
         Ok(())
         //Need to add here
     } else {
-        Ok(main_menu(client, uname))    //returning to main menu
+        Ok(())    //returning to main menu
     }
 }
 
@@ -156,11 +182,12 @@ fn print_repo_titles(repos: &Vec<Repo>) {
 fn print_repo_info(repo: &Repo) {
     println!("{}", repo.name.as_ref().unwrap());
     roasts::roast_fork(repo.fork);
+    roasts::roast_language(repo.language.as_ref());
+    roasts::roast_updated_at(&repo.updated_at.as_ref().unwrap());
     roasts::roast_default_branch(repo.default_branch.as_ref().unwrap());
     roasts::roast_stars(repo.stargazers_count);
-    roasts::roast_license(repo.license.as_ref());
-    roasts::roast_updated_at(&repo.updated_at.as_ref().unwrap());
     roasts::roast_issues(repo.open_issues);
+    roasts::roast_license(repo.license.as_ref());
     println!();
 }
 

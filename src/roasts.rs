@@ -1,4 +1,4 @@
-use crate::types::repo::License;
+use crate::types::repo::{License};
 use chrono::*;
 
 const MINUTE_IN_SECONDS: i64 = 60;
@@ -7,7 +7,7 @@ const DAY_IN_SECONDS: i64 = HOUR_IN_SECONDS * 24;
 const ROUGH_MONTH_IN_SECONDS: i64 = DAY_IN_SECONDS * 30;
 const YEAR_IN_SECONDS: i64 = DAY_IN_SECONDS * 365;
 
-macro_rules! plural{
+macro_rules! plural {
     ($num:expr) => {
         if $num != 1 {
             "s"
@@ -17,17 +17,19 @@ macro_rules! plural{
     }
 }
 
-pub fn roast_num_repos(num: usize) {
+pub fn roast_num_repos(num: usize, max_repos: usize) {
     if num == 0 {
         println!("No public repos? What secrets are you keeping?")
     } else if num < 10 {
         println!("Just {} public repo{}. Congrats on the work-life balance.", num, plural!(num))
+    } else if num >= max_repos {
+        println!("{} public repos, which the max we can receive. Hope the recruiters see this...", max_repos);
     }
 }
 
 pub fn roast_fork(is_fork: bool) {
     if is_fork {
-        println!("Forked (stolen).");
+        println!("Forked (how are those pull requests going?).");
     }
 }
 
@@ -95,7 +97,7 @@ pub fn roast_updated_at(date_str: &String) {
 pub fn roast_issues(num_issues: i32) {
     let plural = plural!(num_issues);
     if num_issues < 5 {
-        println!("Are so few issue{} ({}) because your code is good, or because nobody's heard of this repo?", plural, num_issues)
+        println!("Are there so few issue{} ({}) because your code is good, or because nobody's heard of this repo?", plural, num_issues)
     } else if num_issues < 20 {
         println!("This repo has {} issue{}, might want to get on that.", num_issues, plural)
     } else if num_issues < 100 {
@@ -105,8 +107,34 @@ pub fn roast_issues(num_issues: i32) {
     }
 }
 
-pub fn get_field(field: &str) {
-    match field {
-        "url" => struct.url
+pub fn roast_language(lang: Option<&String>) {
+    if lang.is_some() {
+        let original = lang.unwrap();
+        let lang_string = original.to_ascii_lowercase();
+        let lang = lang_string.as_str(); // this does seem to be necessary
+        if ["go", "java", "scala", "kotlin", "ruby", "r", "c#"].contains(&lang) {
+            println!("This code written is in {}, how very corporate. Lucky you with your 6 figure job.", original);
+        } else if lang == "javascript" {
+            println!("This better not be an up-and-coming JS framework, we already have enough of those.");
+        } else if lang == "typescript" {
+            println!("Ok no roast, TypeScript is actually pretty based.")
+        } else if ["php", "powershell", "assembly", "matlab", "perl", "shell", "rust"].contains(&lang) {
+            println!("Oh your poor soul, this is written in {}.", original);
+        } else if ["swift", "objective-c", "objective-c++"].contains(&lang) {
+            println!("{}, eh? Are you gonna sell this on the app store for $18.99 per month?", original);
+        } else if lang == "lua" {
+            println!("Lua? Good luck on your Roblox mod.");
+        } else if lang == "python" {
+            println!("This is in Python, which means you're either a data scientist making $250k or a high schooler.");
+        } else if ["haskell", "elixir", "clojure", "erlang", "scheme"].contains(&lang) ||
+            lang.contains("caml") || lang.contains("lisp") {
+            println!("Do you only like functional languages like {}? Please, tell me more about monads and idempotency.", original);
+        } else if ["c++", "c"].contains(&lang) {
+            println!("{} is a dangerous weapon, you better be using Valgrind. Yes, you.", original);
+        } else {
+            println!("This code is written in {}.", original);
+        }
+    } else {
+        println!("This repo has no associated programming language. Were you looking for Google Docs?");
     }
 }
