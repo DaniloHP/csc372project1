@@ -170,6 +170,7 @@ fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::e
     }
 }
 
+/// Prints the names of each repo for all user's repos.
 fn print_repo_titles(repos: &Vec<Repo>) {
     let mut i = 0;
     for repo in repos {
@@ -179,6 +180,7 @@ fn print_repo_titles(repos: &Vec<Repo>) {
     }
 }
 
+/// Prints a repo's information along with roasts associated with certain repo fields.
 fn print_repo_info(repo: &Repo) {
     println!("{}", repo.name.as_ref().unwrap());
     roasts::roast_fork(repo.fork);
@@ -204,6 +206,8 @@ fn user_exists(client: &Client, uname: &String) -> bool {
 }
 
 
+/// Prints all of the user's public Github information as long as a value
+/// for the field exists. Takes a User struct instance.
 fn print_all_user_info(uinfo: User){
 
     if uinfo.login.is_some() {
