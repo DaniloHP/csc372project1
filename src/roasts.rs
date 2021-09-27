@@ -7,6 +7,8 @@ const DAY_IN_SECONDS: i64 = HOUR_IN_SECONDS * 24;
 const ROUGH_MONTH_IN_SECONDS: i64 = DAY_IN_SECONDS * 30;
 const YEAR_IN_SECONDS: i64 = DAY_IN_SECONDS * 365;
 
+/// This macro takes a number and yields either "s" or "" depending on whether
+/// an associated noun be plural.
 macro_rules! plural {
     ($num:expr) => {
         if $num != 1 {
@@ -17,6 +19,8 @@ macro_rules! plural {
     }
 }
 
+/// Prints some messages depending on the number of public repositories found
+/// when querying their repos endpoint
 pub fn roast_num_repos(num: usize, max_repos: usize) {
     if num == 0 {
         println!("No public repos? What secrets are you keeping?")
@@ -27,18 +31,23 @@ pub fn roast_num_repos(num: usize, max_repos: usize) {
     }
 }
 
+/// Prints a message if the given bool is true. It should represent whether or
+/// not a repo is a fork.
 pub fn roast_fork(is_fork: bool) {
     if is_fork {
         println!("Forked (how are those pull requests going?).");
     }
 }
 
+/// Prints a message iff the given string is equal to `master`. Should be called
+/// with a repo object's `default_branch` field from the GitHub API.
 pub fn roast_default_branch(branch: &String) {
     if branch == "master" {
         println!("Yikes, still using master as the main branch.");
     }
 }
 
+/// Prints a message depending on the number of stars a repo has
 pub fn roast_stars(stars: i32) {
     if stars == 0 {
         println!("No stars? Womp womp.");
@@ -51,6 +60,8 @@ pub fn roast_stars(stars: i32) {
     }
 }
 
+/// Prints a message depending on the license object of a repo. Will still
+/// print a generic message if the license or it's name is None.
 pub fn roast_license(license: Option<&License>) {
     if license.is_none() || license.unwrap().name.as_ref().unwrap().contains("Unlicense") {
         println!("It's unlicensed! Do you want your code to get stolen?")
@@ -59,9 +70,9 @@ pub fn roast_license(license: Option<&License>) {
     }
 }
 
-/*
- * date_str will be something like "2021-09-20T13:47:36Z"
- */
+/// Prints a message depending on how long ago the given date is. Will still
+/// print a generic message if the date can't be parsed.
+/// * `date_str` - will be in ISO-8601 format (like `2021-09-20T13:47:36Z`)
 pub fn roast_updated_at(date_str: &String) {
     let date_created = UTC.datetime_from_str(date_str.as_str(), "%+");  // ISO-8601
     if date_created.is_ok() {
@@ -94,6 +105,7 @@ pub fn roast_updated_at(date_str: &String) {
     }
 }
 
+/// Prints a message depending on how many issues a repo has.
 pub fn roast_issues(num_issues: i32) {
     let plural = plural!(num_issues);
     if num_issues < 5 {
@@ -107,6 +119,10 @@ pub fn roast_issues(num_issues: i32) {
     }
 }
 
+/// Prints a message depending on the given string, which should be the
+/// `language` field of an API repo object. Will still print a message if the
+/// field is None or if the language is not one of the ones I wrote a specific
+/// message for.
 pub fn roast_language(lang: Option<&String>) {
     if lang.is_some() {
         let original = lang.unwrap();

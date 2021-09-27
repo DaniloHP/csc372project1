@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["rust_gh_client"];
