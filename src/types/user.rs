@@ -1,5 +1,8 @@
 use serde::Deserialize;
 
+/// Represents metadata about a user from the Github API. Most non-primitives
+/// are wrapped in an `Option` to allow for the values to be missing, as not
+/// all values are always present for all users.
 #[derive(Debug, Deserialize)]
 pub struct User {
     pub login: Option<String>,

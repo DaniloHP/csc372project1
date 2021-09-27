@@ -1,3 +1,11 @@
+//! # Overview
+//! This program will show you your **publicly available** GitHub info. It
+//! might also lightly roast your repositories.
+//! # Usage
+//! This program takes no arguments. Simply run with with `cargo run` or
+//! download one of our binaries and run it directly in the terminal.
+//! Enter your GitHub username, and you will be prompted from there.
+
 use crate::types::repo::Repo;
 use crate::types::user::User;
 use reqwest::blocking::Client;
@@ -11,6 +19,9 @@ mod types;
 const SEPARATOR: &str =
     "================================================================================";
 
+/// Prompts the user for their GitHub login and checks to see if it exists
+/// on the web. If it does not, the user will be re-prompted, and if it
+/// does, continues to the main menu.
 fn main() {
     let client = reqwest::blocking::Client::new();
     loop {
@@ -29,6 +40,11 @@ fn main() {
     }
 }
 
+/// Presents the user with the main menu, which allows them to see their own
+/// info, info on their repos, sign in as a different user, or quit.
+/// # Arguments
+/// * `client` - A blocking HTTP client from the `reqwest` library.
+/// * `uname` - The current user's GitHub login.
 fn main_menu(client: &Client, uname: &String) {
     println!("Welcome, {}", uname);
     loop {
@@ -70,6 +86,12 @@ fn main_menu(client: &Client, uname: &String) {
     }
 }
 
+/// Presents the user with the menu with options about their repos. This is
+/// also the function that fetches the repos from the web, so it can return an
+/// error if that goes wrong for whatever reason. Fetches up to 40 repos.
+/// # Arguments
+/// * `client` - A blocking HTTP client from the `reqwest` library.
+/// * `uname` - The current user's GitHub login.
 fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::error::Error>> {
     let max_repos = 40usize;
     let repos = client
@@ -111,7 +133,7 @@ fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::
                 if num_repos > 15 {
                     println!("I hope your terminal can scroll ^^^^^");
                 }
-                println!("{}\n", SEPARATOR);
+                println!("{}", SEPARATOR);
             } else if choice == "r" {
                 break;
             } else if choice == "l" && !should_always_list {
@@ -130,6 +152,12 @@ fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::
     Ok(())
 }
 
+/// Presents the user with the user's information menu. It will show some general
+/// information about the user and then offer the options to print all public information
+/// about the user or to return to the main menu.
+/// # Arguments
+/// * `client` - A blocking HTTP client from the `reqwest` library.
+/// * `uname` - The current user's GitHub login.
 fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::error::Error>> {
     //Get User Info and store into User struct
     let uinfo = client
@@ -138,6 +166,7 @@ fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::e
         .send()?
         .json::<User>()?;
 
+    //Print general information about the user
     println!("Here are some details about {}:", uname);
     println!("    Login: {}", uinfo.login.as_ref().unwrap());
     println!("    User ID: {}", uinfo.id);
@@ -147,6 +176,7 @@ fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::e
     println!("    Followers: {}", uinfo.followers);
     println!("    Following: {}", uinfo.following);
 
+    //Get valid user input to return to main menu or show all information about the user
     let mut choice: String;
     loop {
         println!("\nIf you want more information about {}, enter 'a'. Otherwise 'r' to return to menu.", uinfo.login.as_ref().unwrap());
@@ -159,18 +189,19 @@ fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::e
             println!("**Invalid input. Please try again.**");
         }
     }
-    //Valid Input
+    //User gave valid input, now either show all information or return to main menu
     if choice == "a" {
         println!("Here is all information about {}:", uname);
         print_all_user_info(uinfo);
         Ok(())
-        //Need to add here
     } else {
         Ok(())    //returning to main menu
     }
 }
 
-/// Prints the names of each repo for all user's repos.
+/// Prints the names of each repo for all user's repos in order of creation.
+/// # Arguments
+/// * `repos` - A vector of repo structs
 fn print_repo_titles(repos: &Vec<Repo>) {
     let mut i = 0;
     for repo in repos {
@@ -181,6 +212,8 @@ fn print_repo_titles(repos: &Vec<Repo>) {
 }
 
 /// Prints a repo's information along with roasts associated with certain repo fields.
+/// # Arguments
+/// * `repo` - a repo struct to extract info from for roasting.
 fn print_repo_info(repo: &Repo) {
     println!("{}", repo.name.as_ref().unwrap());
     roasts::roast_fork(repo.fork);
@@ -193,6 +226,13 @@ fn print_repo_info(repo: &Repo) {
     println!();
 }
 
+/// Checks the GH API to see if a user with the login in `uname` exists. Returns
+/// true iff the response is successful (200), so this could return false for
+/// issues other than the user not existing, such as a failed connection or
+/// a non-404 error.
+/// # Arguments
+/// * `client` - A blocking HTTP client from the `reqwest` library.
+/// * `uname` - The current user's GitHub login.
 fn user_exists(client: &Client, uname: &String) -> bool {
     // return true; // good idea to just do this for testing
     let resp = client
@@ -207,7 +247,9 @@ fn user_exists(client: &Client, uname: &String) -> bool {
 
 
 /// Prints all of the user's public Github information as long as a value
-/// for the field exists. Takes a User struct instance.
+/// for the field exists.
+/// # Arguments
+/// * `uinfo` - User struct instance holding the information to be printed
 fn print_all_user_info(uinfo: User){
 
     if uinfo.login.is_some() {
