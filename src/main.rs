@@ -1,6 +1,19 @@
 //! # Overview
 //! This program will show you your **publicly available** GitHub info. It
 //! might also lightly roast your repositories.
+//!
+//! # Installation
+//! Simply download a precompiled binary from our [GitHub repo](https://github.com/DaniloHP/csc372project1)
+//! and run the program in a terminal. If this isn't to your liking or we didn't
+//! build for your platform, you can always clone/download the source code from the
+//! repo and try building it yourself. This will require installing
+//! `cargo`, which is actually quite simple. Follow [this guide](https://www.rust-lang.org/tools/install)
+//! and, once `cargo` is installed, run
+//! ```
+//! cargo run
+//! ```
+//! in your terminal from anywhere within the cloned repository.
+//! 
 //! # Usage
 //! This program takes no arguments. Simply run with with `cargo run` or
 //! download one of our binaries and run it directly in the terminal.
@@ -17,7 +30,7 @@ mod roasts;
 mod types;
 
 const SEPARATOR: &str =
-    "================================================================================";
+    "  ======================================================================================";
 
 /// Prompts the user for their GitHub login and checks to see if it exists
 /// on the web. If it does not, the user will be re-prompted, and if it
@@ -128,10 +141,10 @@ fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::
                 println!("{}\n", SEPARATOR);
                 for repo in &repos {
                     print_repo_info(&repo);
-                    println!();
+                    //println!();
                 }
                 if num_repos > 15 {
-                    println!("I hope your terminal can scroll ^^^^^");
+                    println!("  I hope your terminal can scroll ^^^^^");
                 }
                 println!("{}", SEPARATOR);
             } else if choice == "r" {
@@ -207,7 +220,7 @@ fn print_repo_titles(repos: &Vec<Repo>) {
     for repo in repos {
         i += 1;
         let name = repo.name.as_ref().unwrap();
-        println!("{}. {}", i, name);
+        println!("    {}. {}", i, name);
     }
 }
 
@@ -215,7 +228,7 @@ fn print_repo_titles(repos: &Vec<Repo>) {
 /// # Arguments
 /// * `repo` - a repo struct to extract info from for roasting.
 fn print_repo_info(repo: &Repo) {
-    println!("{}", repo.name.as_ref().unwrap());
+    println!("-> {}", repo.name.as_ref().unwrap());
     roasts::roast_fork(repo.fork);
     roasts::roast_language(repo.language.as_ref());
     roasts::roast_updated_at(&repo.updated_at.as_ref().unwrap());

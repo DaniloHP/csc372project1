@@ -27,7 +27,7 @@ pub fn roast_num_repos(num: usize, max_repos: usize) {
     } else if num < 10 {
         println!("Just {} public repo{}. Congrats on the work-life balance.", num, plural!(num))
     } else if num >= max_repos {
-        println!("{} public repos, which the max we can receive. Hope the recruiters see this...", max_repos);
+        println!("{} public repos, which is the max we can receive. Hope the recruiters see this...", max_repos);
     }
 }
 
@@ -35,7 +35,7 @@ pub fn roast_num_repos(num: usize, max_repos: usize) {
 /// not a repo is a fork.
 pub fn roast_fork(is_fork: bool) {
     if is_fork {
-        println!("Forked (how are those pull requests going?).");
+        println!("    Forked (how are those pull requests going?).");
     }
 }
 
@@ -43,20 +43,20 @@ pub fn roast_fork(is_fork: bool) {
 /// with a repo object's `default_branch` field from the GitHub API.
 pub fn roast_default_branch(branch: &String) {
     if branch == "master" {
-        println!("Yikes, still using master as the main branch.");
+        println!("    Yikes, still using master as the main branch.");
     }
 }
 
 /// Prints a message depending on the number of stars a repo has
 pub fn roast_stars(stars: i32) {
     if stars == 0 {
-        println!("No stars? Womp womp.");
+        println!("    No stars? Womp womp.");
     } else if stars < 10 {
-        println!("Just {} star{}? Do some networking.", stars, plural!(stars));
+        println!("    Just {} star{}? Do some networking.", stars, plural!(stars));
     } else if stars > 100 {
-        println!("Well aren't you popular with your {} stars.", stars);
+        println!("    Well aren't you popular with your {} stars.", stars);
     } else {
-        println!("{} stars.", stars);
+        println!("    {} stars.", stars);
     }
 }
 
@@ -64,9 +64,9 @@ pub fn roast_stars(stars: i32) {
 /// print a generic message if the license or it's name is None.
 pub fn roast_license(license: Option<&License>) {
     if license.is_none() || license.unwrap().name.as_ref().unwrap().contains("Unlicense") {
-        println!("It's unlicensed! Do you want your code to get stolen?")
+        println!("    It's unlicensed! Do you want your code to get stolen?")
     } else {
-        println!("Using a {} license. Weird, because it's not like anybody would try to steal this...", license.unwrap().name.as_ref().unwrap());
+        println!("    Using a {} license. Weird, because it's not like anybody would try to steal this...", license.unwrap().name.as_ref().unwrap());
     }
 }
 
@@ -98,10 +98,10 @@ pub fn roast_updated_at(date_str: &String) {
         } else {
             diff_string = format!("about {} second{} ago. Sheesh, give it a rest you 10Xer.", seconds, plural!(seconds));
         }
-        println!("Unmodified since {}", diff_string);
+        println!("    Unmodified since {}", diff_string);
         return;
     } else {
-        println!("Last modified at {}.", date_str);
+        println!("    Last modified at {}.", date_str);
     }
 }
 
@@ -109,13 +109,13 @@ pub fn roast_updated_at(date_str: &String) {
 pub fn roast_issues(num_issues: i32) {
     let plural = plural!(num_issues);
     if num_issues < 5 {
-        println!("Are there so few issue{} ({}) because your code is good, or because nobody's heard of this repo?", plural, num_issues)
+        println!("    Are there so few issue{} ({}) because your code is good, or because nobody's heard of this repo?", plural, num_issues)
     } else if num_issues < 20 {
-        println!("This repo has {} issue{}, might want to get on that.", num_issues, plural)
+        println!("    This repo has {} issue{}, might want to get on that.", num_issues, plural)
     } else if num_issues < 100 {
-        println!("{} issue{} is kind of a lot, stop messing with this and go fix them.", num_issues, plural)
+        println!("    {} issue{} is kind of a lot, stop messing with this and go fix them.", num_issues, plural)
     } else {
-        println!("Holy crap, this repo has {} issue{}, go get on it!", num_issues, plural)
+        println!("    Holy crap, this repo has {} issue{}, go get on it!", num_issues, plural)
     }
 }
 
@@ -129,28 +129,28 @@ pub fn roast_language(lang: Option<&String>) {
         let lang_string = original.to_ascii_lowercase();
         let lang = lang_string.as_str(); // this does seem to be necessary
         if ["go", "java", "scala", "kotlin", "ruby", "r", "c#"].contains(&lang) {
-            println!("This code written is in {}, how very corporate. Lucky you with your 6 figure job.", original);
+            println!("    This code written is in {}, how very corporate. Lucky you with your 6 figure job.", original);
         } else if lang == "javascript" {
-            println!("This better not be an up-and-coming JS framework, we already have enough of those.");
+            println!("    This better not be an up-and-coming JS framework, we already have enough of those.");
         } else if lang == "typescript" {
-            println!("Ok no roast, TypeScript is actually pretty based.")
+            println!("    Ok no roast, TypeScript is actually pretty based.")
         } else if ["php", "powershell", "assembly", "matlab", "perl", "shell", "rust"].contains(&lang) {
-            println!("Oh your poor soul, this is written in {}.", original);
+            println!("    Oh your poor soul, this is written in {}.", original);
         } else if ["swift", "objective-c", "objective-c++"].contains(&lang) {
             println!("{}, eh? Are you gonna sell this on the app store for $18.99 per month?", original);
         } else if lang == "lua" {
-            println!("Lua? Good luck on your Roblox mod.");
+            println!("    Lua? Good luck on your Roblox mod.");
         } else if lang == "python" {
-            println!("This is in Python, which means you're either a data scientist making $250k or a high schooler.");
+            println!("    This is in Python, which means you're either a data scientist making $250k or a high schooler.");
         } else if ["haskell", "elixir", "clojure", "erlang", "scheme"].contains(&lang) ||
             lang.contains("caml") || lang.contains("lisp") {
-            println!("Do you only like functional languages like {}? Please, tell me more about monads and idempotency.", original);
+            println!("    Do you only like functional languages like {}? Please, tell me more about monads and idempotency.", original);
         } else if ["c++", "c"].contains(&lang) {
-            println!("{} is a dangerous weapon, you better be using Valgrind. Yes, you.", original);
+            println!("    {} is a dangerous weapon, you better be using Valgrind. Yes, you.", original);
         } else {
-            println!("This code is written in {}.", original);
+            println!("    This code is written in {}.", original);
         }
     } else {
-        println!("This repo has no associated programming language. Were you looking for Google Docs?");
+        println!("    This repo has no associated programming language. Were you looking for Google Docs?");
     }
 }
