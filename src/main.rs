@@ -19,15 +19,15 @@
 //! download one of our binaries and run it directly in the terminal.
 //! Enter your GitHub username, and you will be prompted from there.
 
+mod types;
+mod roasts;
+use roasts::*;
 use crate::types::repo::Repo;
 use crate::types::user::User;
 use reqwest::blocking::Client;
 use std::io::{stdout, Write};
+use text_io::read; // a library for reading stdin
 use std::process::exit;
-use text_io::read;
-
-mod roasts;
-mod types;
 
 const SEPARATOR: &str =
     "  ======================================================================================";
@@ -36,7 +36,7 @@ const SEPARATOR: &str =
 /// on the web. If it does not, the user will be re-prompted, and if it
 /// does, continues to the main menu.
 fn main() {
-    let client = reqwest::blocking::Client::new();
+    let client = Client::new();
     loop {
         print!("Enter your GitHub username (or a space to exit): ");
         let _ = stdout().flush();
@@ -113,9 +113,9 @@ fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::
         .header("accept", " application/vnd.github.v3+json")
         .query(&[("per_page", max_repos.to_string())])
         .send()?
-        .json::<Vec<types::repo::Repo>>()?; // Vector of Repo objects
+        .json::<Vec<Repo>>()?; // Vector of Repo objects
     let num_repos = repos.len();
-    roasts::roast_num_repos(num_repos, max_repos);
+    roast_num_repos(num_repos, max_repos);
     let mut should_list = true; //true on the first iteration and if requested with `l`
     let should_always_list = num_repos <= 5; //always show the list if there are fewer than n repos
     let l_prompt = if should_always_list {
@@ -229,13 +229,13 @@ fn print_repo_titles(repos: &Vec<Repo>) {
 /// * `repo` - a repo struct to extract info from for roasting.
 fn print_repo_info(repo: &Repo) {
     println!("-> {}", repo.name.as_ref().unwrap());
-    roasts::roast_fork(repo.fork);
-    roasts::roast_language(repo.language.as_ref());
-    roasts::roast_updated_at(&repo.updated_at.as_ref().unwrap());
-    roasts::roast_default_branch(repo.default_branch.as_ref().unwrap());
-    roasts::roast_stars(repo.stargazers_count);
-    roasts::roast_issues(repo.open_issues);
-    roasts::roast_license(repo.license.as_ref());
+    roast_fork(repo.fork);
+    roast_language(repo.language.as_ref());
+    roast_updated_at(&repo.updated_at.as_ref().unwrap());
+    roast_default_branch(repo.default_branch.as_ref().unwrap());
+    roast_stars(repo.stargazers_count);
+    roast_issues(repo.open_issues);
+    roast_license(repo.license.as_ref());
     println!();
 }
 
