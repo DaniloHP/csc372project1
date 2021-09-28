@@ -22,9 +22,9 @@
 mod types;
 mod roasts;
 use roasts::*;
-use crate::types::repo::Repo;
-use crate::types::user::User;
-use reqwest::blocking::Client;
+use types::repo::Repo;
+use types::user::User;
+use reqwest::blocking::Client; // web request library
 use std::io::{stdout, Write};
 use text_io::read; // a library for reading stdin
 use std::process::exit;
@@ -32,6 +32,7 @@ use std::process::exit;
 const SEPARATOR: &str =
     "  ======================================================================================";
 
+/// This is the entrypoint for the whole program. Takes no arguments.
 /// Prompts the user for their GitHub login and checks to see if it exists
 /// on the web. If it does not, the user will be re-prompted, and if it
 /// does, continues to the main menu.
@@ -49,6 +50,7 @@ fn main() {
             main_menu(&client, &uname)
         } else {
             println!("That account was not found!");
+            // note that ! means println is a macro (like C/C++ macros)
         }
     }
 }
@@ -58,14 +60,16 @@ fn main() {
 /// # Arguments
 /// * `client` - A blocking HTTP client from the `reqwest` library.
 /// * `uname` - The current user's GitHub login.
+// Shows how a function takes a list of parameters with types defined.
 fn main_menu(client: &Client, uname: &String) {
     println!("Welcome, {}", uname);
     loop {
         println!();
         print!("1) See my repos\n2) See my info\ns) Switch account\nq) Quit\nChoice: ");
-        let _ = stdout().flush();
+        let _ = stdout().flush(); // required since there's no newline at the end of ^
         let choice: String = read!("{}\n");
         println!();
+        // matches are basically switch statements
         match choice.trim() {
             "1" => {
                 let res = print_repos_menu(client, uname);
@@ -106,7 +110,7 @@ fn main_menu(client: &Client, uname: &String) {
 /// * `client` - A blocking HTTP client from the `reqwest` library.
 /// * `uname` - The current user's GitHub login.
 fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::error::Error>> {
-    let max_repos = 40usize;
+    let max_repos = 40usize; // usize literal because Vecs are indexed in usize
     let repos = client
         .get(format!("https://api.github.com/users/{}/repos", uname))
         .header("User-agent", "")
@@ -118,6 +122,7 @@ fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::
     roast_num_repos(num_repos, max_repos);
     let mut should_list = true; //true on the first iteration and if requested with `l`
     let should_always_list = num_repos <= 5; //always show the list if there are fewer than n repos
+    // Below is Rust's ternary statement
     let l_prompt = if should_always_list {
         "" //don't prompt to list if we're always going to show the list anyway
     } else {
@@ -154,6 +159,13 @@ fn print_repos_menu(client: &Client, uname: &String) -> Result<(), Box<dyn std::
             } else {
                 let default = num_repos + 1;
                 let index = choice.parse::<usize>().unwrap_or(default);
+                // choice.parse::<usize>() is a String method that converts the
+                // string to a given type. We specified the type using the
+                // `::<usize>` part, which is affectionately called the turbofish
+                // operator. So the line above parses the string into a usize,
+                // and instead of unwrapping without checking, we have it
+                // attempt to unwrap, or if there was an error in parsing,
+                // it yields the value default.
                 if index != default && index <= num_repos {
                     print_repo_info(&repos[index - 1])
                 } else {
@@ -181,9 +193,19 @@ fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::e
 
     //Print general information about the user
     println!("Here are some details about {}:", uname);
+    // .as_ref().unwrap() is something that we have to do a lot in this program.
+    // The as_ref() part lets us borrow the object inside an object, and it is
+    // required for the program to compile. The unwrap() part actually gives
+    // us the object inside the Option. Nearly all fields that we get from the
+    // internet are wrapped in Options because that allows them to be omitted
+    // without causing a runtime error when they are deserialized from JSON
+    // into our structs. Sometimes, such as below, we are positive that a
+    // field will exist in a struct and we will just unwrap() without checking
+    // if the Option is_some(). For example, evey user has a login (username)
+    // and url. In other parts, you'll see us checking the is_some().
     println!("    Login: {}", uinfo.login.as_ref().unwrap());
     println!("    User ID: {}", uinfo.id);
-    println!("    User URL: {}", uinfo.url.as_ref().unwrap());
+    println!("    User URL: {}", uinfo.html_url.as_ref().unwrap());
     println!("    Account Created: {}", uinfo.created_at.as_ref().unwrap());
     println!("    Account Updated: {}", uinfo.updated_at.as_ref().unwrap());
     println!("    Followers: {}", uinfo.followers);
@@ -191,11 +213,13 @@ fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::e
 
     //Get valid user input to return to main menu or show all information about the user
     let mut choice: String;
+    // loop equivalent to while(true_
     loop {
         println!("\nIf you want more information about {}, enter 'a'. Otherwise 'r' to return to menu.", uinfo.login.as_ref().unwrap());
         choice = read!("{}\n");
         let choice = choice.trim();
 
+        // standard if else statement
         if choice == "a" || choice == "r" {
             break;
         } else {
@@ -217,6 +241,7 @@ fn print_user_info(client: &Client, uname: &String) -> Result<(), Box<dyn std::e
 /// * `repos` - A vector of repo structs
 fn print_repo_titles(repos: &Vec<Repo>) {
     let mut i = 0;
+    // this for loop iterates through an iterable object (Vector)
     for repo in repos {
         i += 1;
         let name = repo.name.as_ref().unwrap();
@@ -264,7 +289,10 @@ fn user_exists(client: &Client, uname: &String) -> bool {
 /// # Arguments
 /// * `uinfo` - User struct instance holding the information to be printed
 fn print_all_user_info(uinfo: User){
-
+    // Some of these values are not always present in GitHub's response JSON, so
+    // we check if each one is_some() before printing it. Options represent the
+    // possible absence of a value, so calling is_some() is like checking for
+    // null or undefined in JavaScript.
     if uinfo.login.is_some() {
         println!("    Login: {}", uinfo.login.as_ref().unwrap());
     }

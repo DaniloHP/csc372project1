@@ -1,7 +1,8 @@
-use serde::Deserialize;
+use serde::Deserialize; // library for serializing and deserializing objects
+
 /// Represents a repository's owner. This is basically a considerable stripped
 /// down version of the `User` struct.
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct Owner {
     pub login: Option<String>,
     pub id: i32,
@@ -24,7 +25,7 @@ pub struct Owner {
 }
 
 /// Represents info about a repo's license, if it has one.
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct License {
     pub key: Option<String>,
     pub name: Option<String>,

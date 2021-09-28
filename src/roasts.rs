@@ -1,5 +1,5 @@
 use crate::types::repo::{License};
-use chrono::*;
+use chrono::*; //library for dealing with datetimes
 
 const MINUTE_IN_SECONDS: i64 = 60;
 const HOUR_IN_SECONDS: i64 = MINUTE_IN_SECONDS * 60;
