@@ -1,5 +1,6 @@
-To see our pretty docs, open the HTML file at `<project-root>/docs/rust_gh_client/index.html`,
-where `<project-root>` is the same directory that contains this very README.
+##### *To see our pretty docs...*
+Open the HTML file at `<project-root>/docs/rust_gh_client/index.html`
+in your browser, where `<project-root>` is the same directory that contains this very README.
 
 # Overview
 This program will show you your **publicly available** GitHub info. It
