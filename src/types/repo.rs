@@ -1,5 +1,6 @@
 use serde::Deserialize;
-
+/// Represents a repository's owner. This is basically a considerable stripped
+/// down version of the `User` struct.
 #[derive(Debug, Deserialize)]
 pub struct Owner {
     pub login: Option<String>,
@@ -19,18 +20,22 @@ pub struct Owner {
     pub events_url: Option<String>,
     pub received_events_url: Option<String>,
     // pub type: Option<String>,
-    pub site_admin: bool
+    pub site_admin: bool,
 }
 
+/// Represents info about a repo's license, if it has one.
 #[derive(Debug, Deserialize)]
 pub struct License {
     pub key: Option<String>,
     pub name: Option<String>,
     pub spdx_id: Option<String>,
     pub url: Option<String>,
-    pub node_id: Option<String>
+    pub node_id: Option<String>,
 }
 
+/// Represents metadata about a repo from the Github API. Most non-primitives
+/// are wrapped in an `Option` to allow for the values to be missing, as not
+/// all values are always present for all repos.
 #[derive(Debug, Deserialize)]
 pub struct Repo {
     pub id: i32,
@@ -105,5 +110,5 @@ pub struct Repo {
     pub forks: i32,
     pub open_issues: i32,
     pub watchers: i32,
-    pub default_branch: Option<String>
+    pub default_branch: Option<String>,
 }

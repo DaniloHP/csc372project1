@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["repo","this file allows us to import our structs in other files."],["user",""]]});

@@ -1,3 +1,10 @@
+/*
+ * This script fetches any JSON from the web and prints a legal Rust struct
+ * declaration. If any fields have a name that happens to be a Rust keyword,
+ * the field is included but commented out. Theoretically the output can simply
+ * be copy-pasted into a Rust file.
+ * Requires node version >= 14 to run.
+ */
 import fetch from "node-fetch";
 
 const args = process.argv;
@@ -25,6 +32,7 @@ const toRustType = (val) => {
   }
 };
 
+// obj is the JSON object from the GitHub API
 const iterObj = (obj, structName) => {
   let soFar = "";
   soFar += `\n#[derive(Debug, Deserialize)]\npub struct ${structName} {\n`;
