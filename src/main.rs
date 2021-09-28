@@ -3,7 +3,7 @@
 //! might also lightly roast your repositories.
 //!
 //! # Installation
-//! Simply download a precompiled binary from our [GitHub repo](https://github.com/DaniloHP/csc372project1)
+//! Simply download a precompiled binary from our [GitHub release](https://github.com/DaniloHP/csc372project1/releases/latest)
 //! and run the program in a terminal. If this isn't to your liking or we didn't
 //! build for your platform, you can always clone/download the source code from the
 //! repo and try building it yourself. This will require installing

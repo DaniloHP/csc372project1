@@ -7,7 +7,7 @@ This program will show you your **publicly available** GitHub info. It
 might also lightly roast your repositories.
 
 # Installation
-Simply download a precompiled binary from our [release](https://github.com/DaniloHP/csc372project1/releases/tag/1.0)
+Simply download a precompiled binary from our [release](https://github.com/DaniloHP/csc372project1/releases/latest)
 and run the program in a terminal. Plese read the warning in the release's description 
 about your OS's security features. If you don't like downloading and running binaries or we didn't
 build for your platform, you can always clone/download the source code from the
